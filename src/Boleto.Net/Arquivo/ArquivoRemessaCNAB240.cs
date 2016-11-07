@@ -51,8 +51,8 @@ namespace BoletoNet
             {
                 int numeroRegistro = 0;
                 int numeroRegistroDetalhe = 1;
-                string strline;                
-                    StreamWriter incluiLinha = new StreamWriter(arquivo);
+                string strline;
+                StreamWriter incluiLinha = new StreamWriter(arquivo);
                 if (banco.Codigo == 104)//quando é caixa verifica o modelo de leiatue que é está em boletos.remssa.tipodocumento
                     strline = banco.GerarHeaderRemessa(numeroConvenio, cedente, TipoArquivo.CNAB240, numeroArquivoRemessa, boletos[0]);
                 else
@@ -61,8 +61,8 @@ namespace BoletoNet
                 numeroRegistro++;
 
                 //
-                    incluiLinha.WriteLine(strline);
-                    OnLinhaGerada(null, strline, EnumTipodeLinha.HeaderDeArquivo);
+                incluiLinha.WriteLine(strline);
+                OnLinhaGerada(null, strline, EnumTipodeLinha.HeaderDeArquivo);
                 if (banco.Codigo == 104)//quando é caixa verifica o modelo de leiatue que é está em boletos.remssa.tipodocumento
                     strline = banco.GerarHeaderLoteRemessa(numeroConvenio, cedente, numeroArquivoRemessa, TipoArquivo.CNAB240, boletos[0]);
                 else
@@ -74,7 +74,7 @@ namespace BoletoNet
                     OnLinhaGerada(null, strline, EnumTipodeLinha.HeaderDeLote);
                     numeroRegistro++;
                 }
-                
+
 
                 if (banco.Codigo == 341)
                 {
@@ -104,7 +104,7 @@ namespace BoletoNet
                     #endregion
                 }
                 else if (banco.Codigo == 104) // Só validar boleto.Remessa quando o banco for Caixa porque quando o banco for diferente de 104 a propriedade "Remessa" fica null
-                {                    
+                {
                     #region se Banco Caixa - 104 e tipo de arquivo da remessa SIGCB
                     if ((boletos[0].Remessa.TipoDocumento.Equals("2")) || boletos[0].Remessa.TipoDocumento.Equals("1"))
                     {
@@ -122,15 +122,15 @@ namespace BoletoNet
                             OnLinhaGerada(boleto, strline, EnumTipodeLinha.DetalheSegmentoQ);
                             numeroRegistro++;
                             numeroRegistroDetalhe++;
-                            //segmento R não implementado...
-                            //if (boleto.ValorMulta > 0)
-                            //{
-                            //    strline = boleto.Banco.GerarDetalheSegmentoRRemessa(boleto, numeroRegistroDetalhe, TipoArquivo.CNAB240);
-                            //    incluiLinha.WriteLine(strline);
-                            //    OnLinhaGerada(boleto, strline, EnumTipodeLinha.DetalheSegmentoR);
-                            //    numeroRegistro++;
-                            //    numeroRegistroDetalhe++;
-                            //}
+                            //segmento R implementado parcialmente...
+                            if (boleto.ValorMulta > 0)
+                            {
+                                strline = boleto.Banco.GerarDetalheSegmentoRRemessa(boleto, numeroRegistroDetalhe, TipoArquivo);
+                                incluiLinha.WriteLine(strline);
+                                OnLinhaGerada(boleto, strline, EnumTipodeLinha.DetalheSegmentoR);
+                                numeroRegistro++;
+                                numeroRegistroDetalhe++;
+                            }
                         }
 
                         numeroRegistro--;
@@ -171,8 +171,8 @@ namespace BoletoNet
 
                     }
                     numeroRegistro++;
-                
-                    strline = banco.GerarTrailerRemessaComDetalhes(numeroRegistro, boletos.Count,  TipoArquivo.CNAB240, cedente, totalTitulos);
+
+                    strline = banco.GerarTrailerRemessaComDetalhes(numeroRegistro, boletos.Count, TipoArquivo.CNAB240, cedente, totalTitulos);
                     incluiLinha.WriteLine(strline);
                     OnLinhaGerada(null, strline, EnumTipodeLinha.TraillerDeArquivo);
 
