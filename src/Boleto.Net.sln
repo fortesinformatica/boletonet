@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Biblioteca", "Biblioteca", "{75FC8289-5B1E-4684-8497-54494382FA55}"
 	ProjectSection(SolutionItems) = preProject
@@ -33,10 +33,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boleto.Net.Arquivo", "Bolet
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Boleto.Net.Site", "Boleto.Net.Site\", "{3E75E02F-A49C-4C96-8A9E-8A405D8B6167}"
 	ProjectSection(WebsiteProperties) = preProject
-		SccProjectName = "SAK"
-		SccAuxPath = "SAK"
-		SccLocalPath = "SAK"
-		SccProvider = "SAK"
+		SccProjectName = ""
+		SccAuxPath = ""
+		SccLocalPath = ""
+		SccProvider = ""
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.1"
 		ProjectReferences = "{F173E80B-E36B-48AD-B483-A27F8CA86F3C}|Boleto.Net.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/Boleto.Net.Site"
