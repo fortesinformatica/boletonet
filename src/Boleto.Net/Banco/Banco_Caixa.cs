@@ -489,7 +489,7 @@ namespace BoletoNet
                 {
 
                     case TipoArquivo.CNAB240:
-                        _header = GerarHeaderRemessaCNAB240(cedente);
+                        _header = GerarHeaderRemessaCNAB240(cedente, numeroArquivoRemessa);
                         break;
                     case TipoArquivo.CNAB400:
                         _header = GerarHeaderRemessaCNAB400(0, cedente, numeroArquivoRemessa);
@@ -518,9 +518,9 @@ namespace BoletoNet
                 {
                     case TipoArquivo.CNAB240:
                         if (boletos.Remessa.TipoDocumento.Equals("2") || boletos.Remessa.TipoDocumento.Equals("1"))
-                            _header = GerarHeaderRemessaCNAB240SIGCB(cedente);
+                            _header = GerarHeaderRemessaCNAB240SIGCB(cedente, numeroArquivoRemessa);
                         else
-                            _header = GerarHeaderRemessaCNAB240(cedente);
+                            _header = GerarHeaderRemessaCNAB240(cedente, numeroArquivoRemessa);
                         break;
                     case TipoArquivo.CNAB400:
                         _header = GerarHeaderRemessaCNAB400(0, cedente, numeroArquivoRemessa);
@@ -784,12 +784,12 @@ namespace BoletoNet
             diasDesconto = 0;
             foreach (IInstrucao instrucao in boleto.Instrucoes)
             {
-                if (instrucao.Codigo.Equals(9) || instrucao.Codigo.Equals(42) || instrucao.Codigo.Equals(81) || instrucao.Codigo.Equals(82))
+                if (instrucao.Codigo.Equals(1))
                 {
                     protestar = true;
                     diasProtesto = instrucao.QuantidadeDias;
                 }
-                else if (instrucao.Codigo.Equals(91) || instrucao.Codigo.Equals(92))
+                else if (instrucao.Codigo.Equals(2))
                 {
                     baixaDevolver = true;
                     diasDevolucao = instrucao.QuantidadeDias;
@@ -801,7 +801,7 @@ namespace BoletoNet
                 }
             }
         }
-        public string GerarHeaderRemessaCNAB240(Cedente cedente)
+        public string GerarHeaderRemessaCNAB240(Cedente cedente, int numeroArquivoRemessa)
         {
             try
             {
@@ -1118,7 +1118,7 @@ namespace BoletoNet
         #endregion
 
         #region CNAB 240 - SIGCB
-        public string GerarHeaderRemessaCNAB240SIGCB(Cedente cedente)
+        public string GerarHeaderRemessaCNAB240SIGCB(Cedente cedente, int numeroArquivoRemessa)
         {
             try
             {
@@ -1146,7 +1146,7 @@ namespace BoletoNet
                 reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediNumericoSemSeparador_, 0143, 001, 0, "1", '0'));                                          // posição 143 até 413 (1) - Código 1 - Remessa / 2 - Retorno
                 reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediDataDDMMAAAA_________, 0144, 008, 0, DateTime.Now, ' '));                                 // posição 144 até 151 (8) - Data de Geração do Arquivo
                 reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediHoraHHMMSS___________, 0152, 006, 0, DateTime.Now, ' '));                                 // posição 152 até 157 (6) - Hora de Geração do Arquivo
-                reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediNumericoSemSeparador_, 0158, 006, 0, cedente.NumeroSequencial, '0'));                     // posição 158 até 163 (6) - Número Seqüencial do Arquivo
+                reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediNumericoSemSeparador_, 0158, 006, 0, numeroArquivoRemessa, '0'));                     // posição 158 até 163 (6) - Número Seqüencial do Arquivo
                 reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediNumericoSemSeparador_, 0164, 003, 0, "050", '0'));                                        // posição 164 até 166 (3) - Nro da Versão do Layout do Arquivo
                 reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediNumericoSemSeparador_, 0167, 005, 0, "0", '0'));                                          // posição 167 até 171 (5) - Densidade de Gravação do Arquivo
                 reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediAlphaAliEsquerda_____, 0172, 020, 0, string.Empty, ' '));                                 // posição 172 até 191 (20)- Para Uso Reservado do Banco
