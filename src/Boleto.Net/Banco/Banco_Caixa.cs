@@ -693,7 +693,7 @@ namespace BoletoNet
 
                     case TipoArquivo.CNAB240:
                         if (boletos.Remessa.TipoDocumento.Equals("2") || boletos.Remessa.TipoDocumento.Equals("1"))
-                            header = GerarHeaderLoteRemessaCNAC240SIGCB(cedente, numeroArquivoRemessa);
+                            header = GerarHeaderLoteRemessaCNAC240SIGCB(cedente);
                         else
                             header = GerarHeaderLoteRemessaCNAB240(cedente, numeroArquivoRemessa);
                         break;
@@ -784,12 +784,12 @@ namespace BoletoNet
             diasDesconto = 0;
             foreach (IInstrucao instrucao in boleto.Instrucoes)
             {
-                if (instrucao.Codigo.Equals(9) || instrucao.Codigo.Equals(42) || instrucao.Codigo.Equals(81) || instrucao.Codigo.Equals(82))
+                if (instrucao.Codigo.Equals(1) || instrucao.Codigo.Equals(9) || instrucao.Codigo.Equals(42) || instrucao.Codigo.Equals(81) || instrucao.Codigo.Equals(82))
                 {
                     protestar = true;
                     diasProtesto = instrucao.QuantidadeDias;
                 }
-                else if (instrucao.Codigo.Equals(91) || instrucao.Codigo.Equals(92))
+                else if (instrucao.Codigo.Equals(2) || instrucao.Codigo.Equals(91) || instrucao.Codigo.Equals(92))
                 {
                     baixaDevolver = true;
                     diasDevolucao = instrucao.QuantidadeDias;
@@ -1166,7 +1166,7 @@ namespace BoletoNet
                 throw new Exception("Erro ao gerar HEADER do arquivo de remessa do CNAB240 SIGCB.", ex);
             }
         }
-        public string GerarHeaderLoteRemessaCNAC240SIGCB(Cedente cedente, int numeroArquivoRemessa)
+        public string GerarHeaderLoteRemessaCNAC240SIGCB(Cedente cedente)
         {
             try
             {
@@ -1224,7 +1224,7 @@ namespace BoletoNet
                 #endregion
                 reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediAlphaAliEsquerda_____, 0104, 040, 0, vInstrucao1, ' '));                                   // posição 104 até 143 (40) - Mensagem 1
                 reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediAlphaAliEsquerda_____, 0144, 040, 0, vInstrucao2, ' '));                                   // posição 144 até 183 (40) - Mensagem 2
-                reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediNumericoSemSeparador_, 0184, 008, 0, numeroArquivoRemessa, '0'));                          // posição 184 até 191 (8)  - Número Remessa/Retorno
+                reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediNumericoSemSeparador_, 0184, 008, 0, cedente.NumeroSequencial, '0'));                          // posição 184 até 191 (8)  - Número Remessa/Retorno
                 reg.CamposEDI.Add(new TCampoRegistroEDI(TTiposDadoEDI.ediDataDDMMAAAA_________, 0192, 008, 0, DateTime.Now, ' '));                                  // posição 192 até 199 (8) - Data de Geração do Arquivo                
                 /*Data do Crédito
                 Data de efetivação do crédito referente ao pagamento do título de cobrança. 
