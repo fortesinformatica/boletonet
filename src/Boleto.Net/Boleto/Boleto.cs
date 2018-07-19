@@ -15,7 +15,8 @@ namespace BoletoNet
 
 		private readonly CodigoBarra _codigoBarra = new CodigoBarra();
 
-		private string _carteira = string.Empty;
+        private string _assessoriaEscritural = string.Empty;
+        private string _carteira = string.Empty;
 		private string _variacaoCarteira = string.Empty;
 		private string _nossoNumero = string.Empty;
 		private string _digitoNossoNumero = string.Empty;
@@ -146,10 +147,19 @@ namespace BoletoNet
 			}
 		}
 
-		/// <summary> 
-		/// Retorna a Categoria do boleto
-		/// </summary>
-		public int Categoria
+        /// <summary> 
+        /// Retorna a Assessoria Escritural
+        /// </summary>
+        public string AssessoriaEscritural
+        {
+            get { return this._assessoriaEscritural; }
+            set { this._assessoriaEscritural = value; }
+        }
+
+        /// <summary> 
+        /// Retorna a Categoria do boleto
+        /// </summary>
+        public int Categoria
 		{
 			get { return this._categoria; }
 			set { this._categoria = value; }
