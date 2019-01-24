@@ -47,7 +47,7 @@ namespace BoletoNet
             else boleto.LocalPagamento = "PAGÁVEL PREFERENCIALMENTE NAS COOPERATIVAS DE CRÉDITO DO SICREDI";
 
             //Verifica se o nosso número é válido
-            if (Utils.ToInt64(boleto.NossoNumero) == 0 || boleto.NossoNumero.Length > 8)
+            if (Utils.ToInt64(boleto.NossoNumero) == 0 || boleto.NossoNumero.Length > 9)
                 throw new NotImplementedException("Nosso número inválido");
             else if (boleto.NossoNumero.Length == 6)
             {
