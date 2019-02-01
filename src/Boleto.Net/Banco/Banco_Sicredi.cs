@@ -188,22 +188,6 @@ namespace BoletoNet
                 dv_cmpLivre);
         }
 
-        //public bool RegistroByCarteira(Boleto boleto)
-        //{
-        //    bool valida = false;
-        //    if (boleto.Carteira == "112"
-        //        || boleto.Carteira == "115"
-        //        || boleto.Carteira == "104"
-        //        || boleto.Carteira == "147"
-        //        || boleto.Carteira == "188"
-        //        || boleto.Carteira == "108"
-        //        || boleto.Carteira == "109"
-        //        || boleto.Carteira == "150"
-        //        || boleto.Carteira == "121")
-        //        valida = true;
-        //    return valida;
-        //}
-
         #region Métodos de Geração do Arquivo de Remessa
         public override string GerarDetalheRemessa(Boleto boleto, int numeroRegistro, TipoArquivo tipoArquivo)
         {
