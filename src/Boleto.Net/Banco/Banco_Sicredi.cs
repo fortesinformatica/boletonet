@@ -118,24 +118,29 @@ namespace BoletoNet
         public override void FormataLinhaDigitavel(Boleto boleto)
         {
             //041M2.1AAAd1  CCCCC.CCNNNd2  NNNNN.041XXd3  V FFFF9999999999
+            var codigoBarras = boleto.CodigoBarra.Codigo;
+            var campoLivre = boleto.CodigoBarra.CampoLivre;
 
-            string campo1 = "7489" + boleto.CodigoBarra.CampoLivre.Substring(0, 5);
-            int d1 = Mod10Sicredi(campo1);
-            campo1 = FormataCampoLD(campo1) + d1.ToString();
+            var codigoBanco = codigoBarras.Substring(0, 3);
+            var codigoMoeda = codigoBarras.Substring(4, 1);
+            var posicoesCamposLivre = campoLivre.Substring(0, 5);
+            var campo1 = $"{codigoBanco}{codigoMoeda}{posicoesCamposLivre}";
+            var dvCampo1 = Mod10Sicredi(campo1).ToString();
+            campo1 = FormataCampoLD(campo1) + dvCampo1;
 
-            string campo2 = boleto.CodigoBarra.CampoLivre.Substring(5, 10);
-            int d2 = Mod10Sicredi(campo2);
-            campo2 = FormataCampoLD(campo2) + d2.ToString();
+            var campo2 = campoLivre.Substring(5, 10);
+            var dvCampo2 = Mod10Sicredi(campo2).ToString();
+            campo2 = FormataCampoLD(campo2) + dvCampo2;
 
-            string campo3 = boleto.CodigoBarra.CampoLivre.Substring(15, 10);
-            int d3 = Mod10Sicredi(campo3);
-            campo3 = FormataCampoLD(campo3) + d3.ToString();
+            var campo3 = campoLivre.Substring(15, 10);
+            var dvCampo3 = Mod10Sicredi(campo3).ToString();
+            campo3 = FormataCampoLD(campo3) + dvCampo3;
 
-            string campo4 = boleto.CodigoBarra.Codigo.Substring(boleto.CodigoBarra.Codigo.Length - 1, 1);
+            var campo4 = boleto.CodigoBarra.DigitoVerificador;
 
-            string campo5 = boleto.CodigoBarra.FatorVencimento.ToString() + boleto.CodigoBarra.ValorDocumento;
+            var campo5 = $"{boleto.CodigoBarra.FatorVencimento}{boleto.CodigoBarra.ValorDocumento}";
 
-            boleto.CodigoBarra.LinhaDigitavel = campo1 + " " + campo2 + " " + campo3 + " " + campo4 + " " + campo5;
+            boleto.CodigoBarra.LinhaDigitavel = $"{campo1} {campo2} {campo3} {campo4} {campo5}";
         }
         private string FormataCampoLD(string campo)
         {
@@ -144,11 +149,11 @@ namespace BoletoNet
 
         public override void FormataCodigoBarra(Boleto boleto)
         {
-            string valorBoleto = boleto.ValorBoleto.ToString("f").Replace(",", "").Replace(".", "");
+            var valorBoleto = boleto.ValorBoleto.ToString("f").Replace(",", "").Replace(".", "");
             valorBoleto = Utils.FormatCode(valorBoleto, 10);
 
             var codigoCobranca = 1; //Código de cobrança com registro
-            string cmp_livre =
+            var campoLivre =
                 codigoCobranca +
                 boleto.Carteira +
                 boleto.NossoNumero +
@@ -158,34 +163,34 @@ namespace BoletoNet
                 "1" + 
                 "0";
 
-            string dv_cmpLivre = digSicredi(cmp_livre).ToString();
+            var campoLivreDv = digSicredi(campoLivre).ToString();
+            campoLivre = campoLivre + campoLivreDv;
 
-            boleto.CodigoBarra.CampoLivre = cmp_livre + dv_cmpLivre;
+            boleto.CodigoBarra.CampoLivre = campoLivre;
             boleto.CodigoBarra.FatorVencimento = FatorVencimento(boleto);
             boleto.CodigoBarra.Moeda = 9;
             boleto.CodigoBarra.ValorDocumento = valorBoleto;
 
-            var codigoSemDv = GerarCodigoDeBarras(boleto, valorBoleto, cmp_livre, dv_cmpLivre);
+            var codigoBarras = GerarCodigoDeBarras(boleto, valorBoleto, campoLivre);
+            var digitoVerificadorGeral = digSicredi(codigoBarras, digitoGeral: true);
 
-            int dvGeral = digSicredi(codigoSemDv, digitoGeral: true);
-
-            boleto.CodigoBarra.Codigo = $"{codigoSemDv}{dvGeral}";
+            boleto.CodigoBarra.Codigo = ProcessarCodigosDeBarrasComDv(codigoBarras, digitoVerificadorGeral);
         }
 
-        private string GerarCodigoDeBarras(Boleto boleto, string valorBoleto, string cmp_livre, string dv_cmpLivre, int? dv_geral = null)
+        private string GerarCodigoDeBarras(Boleto boleto, string valorBoleto, string campoLivre)
         {
-            var idBanco = Utils.FormatCode(Codigo.ToString(), 3);
+            var codigoBanco = Codigo.ToString().PadLeft(3, '0');
+            var fatorVencimento = FatorVencimento(boleto).ToString().PadLeft(4, '0');
 
-            var digitoVerficiadorGeradl = dv_geral.HasValue ? dv_geral.Value.ToString() : string.Empty;
-            var fatorVencimento = FatorVencimento(boleto);
-            return string.Format("{0}{1}{2}{3}{4}{5}{6}",
-                idBanco,
-                boleto.Moeda,
-                digitoVerficiadorGeradl,
-                fatorVencimento.ToString().PadLeft(4, '0'),
-                valorBoleto,
-                cmp_livre,
-                dv_cmpLivre);
+            return $"{codigoBanco}{boleto.Moeda}{fatorVencimento}{valorBoleto}{campoLivre}";
+        }
+
+        private string ProcessarCodigosDeBarrasComDv(string codigoDeBarras, int digitoVerificador)
+        {
+            if (string.IsNullOrWhiteSpace(codigoDeBarras))
+                return codigoDeBarras;
+
+            return $"{codigoDeBarras.Substring(0, 3)}{digitoVerificador}{codigoDeBarras.Substring(3)}";
         }
 
         #region Métodos de Geração do Arquivo de Remessa

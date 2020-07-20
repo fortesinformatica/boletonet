@@ -45,7 +45,27 @@ namespace BoletoNet
 
         public string DigitoVerificador
         {
-            get { return (CodigoBanco + Moeda + FatorVencimento + ValorDocumento + CampoLivre).Modulo11(9); }
+            get
+            {
+                var codigoSemDv = $"{CodigoBanco}{Moeda}{FatorVencimento}{ValorDocumento}{CampoLivre}";
+                int pesoMaximo = 9, soma = 0, peso = 2;
+
+                for (var i = (codigoSemDv.Length - 1); i >= 0; i--)
+                {
+                    soma = soma + (Convert.ToInt32(codigoSemDv.Substring(i, 1)) * peso);
+                    if (peso == pesoMaximo)
+                        peso = 2;
+                    else
+                        peso = peso + 1;
+                }
+
+                var resto = (soma % 11);
+
+                if (resto <= 1 || resto > 9)
+                    return "1";
+
+                return (11 - resto).ToString();
+            }
         }
 
         public string LinhaDigitavelFormatada
